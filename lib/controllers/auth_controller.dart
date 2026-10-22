@@ -1,0 +1,46 @@
+import 'package:flutter/foundation.dart';
+
+import 'package:guia/services/auth_service.dart';
+
+import 'package:guia/services/session_service.dart';
+
+class AuthController extends ChangeNotifier {
+  bool carregando = false;
+
+  String erro = '';
+
+  Future<bool> autenticarUsuario(String email, String senha) async {
+    carregando = true;
+    erro = '';
+    notifyListeners();
+
+    try {
+      final Map dados = await AuthService().autenticar(email, senha);
+
+      final String? token = dados['token'];
+
+      if (token == null) {
+        erro = dados['erro'] ?? 'Login ou senha invalidos!';
+        return false;
+      }
+
+      await SessionService().salvarToken(token);
+
+      if (dados['usuario'] != null) {
+        await SessionService().salvarUsuario(dados['usuario']);
+      }
+
+      return true;
+    } catch (e) {
+      erro = 'Erro: ${e.toString()}';
+      return false;
+    } finally {
+      carregando = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deslogarUsuario() async {
+    await SessionService().logout();
+  }
+}
