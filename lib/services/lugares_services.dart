@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class LugaresServices {
   int pagina = 1;
-  int limite = 10;
+  int limite = 1000;
 
   Future<List<LugaresModel>> buscarLugares() async {
     final resposta = await http.get(

@@ -24,6 +24,13 @@ class LugaresModel {
     this.descricao = '',
   });
 
+  bool get coordenadasValidas {
+    return latitude >= -90 &&
+        latitude <= 90 &&
+        longitude >= -180 &&
+        longitude <= 180;
+  }
+
   factory LugaresModel.fromJson(Map<String, dynamic> json) {
     return LugaresModel(
       id: json['id'],

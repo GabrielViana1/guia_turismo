@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 import 'package:guia/controllers/camera_controller.dart';
 import 'package:guia/controllers/categorias_controller.dart';
+import 'package:guia/controllers/localizacao_controller.dart';
 import 'package:guia/controllers/lugares_controller.dart';
 
+import 'package:guia/models/local_model.dart';
 import 'package:guia/models/lugares_model.dart';
 
 import 'package:provider/provider.dart';
@@ -77,6 +79,17 @@ class _CadastroLugarState extends State<CadastroLugar> {
     });
   }
 
+  Future<void> _buscarNoMapa() async {
+    context.read<LocalizacaoController>().limpar();
+
+    final local = await Navigator.pushNamed(context, 'buscar_local');
+
+    if (local is LocalModel) {
+      _latitudeController.text = local.latitude.toString();
+      _longitudeController.text = local.longitude.toString();
+    }
+  }
+
   String? _validarObrigatorio(String? valor) {
     if (valor == null || valor.trim().isEmpty) {
       return 'Campo obrigatorio!';
@@ -84,13 +97,19 @@ class _CadastroLugarState extends State<CadastroLugar> {
     return null;
   }
 
-  String? _validarNumero(String? valor) {
+  String? _validarCoordenada(String? valor, int limite) {
     if (valor == null || valor.trim().isEmpty) {
       return 'Campo obrigatorio!';
     }
 
-    if (double.tryParse(valor) == null) {
+    final numero = double.tryParse(valor);
+
+    if (numero == null) {
       return 'Informe um numero valido!';
+    }
+
+    if (numero < -limite || numero > limite) {
+      return 'Informe um valor entre -$limite e $limite!';
     }
     return null;
   }
@@ -102,6 +121,11 @@ class _CadastroLugarState extends State<CadastroLugar> {
         title: Text("Cadastrar lugar"),
 
         actions: [
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, 'mapa'),
+            icon: Icon(Icons.map),
+            tooltip: 'Ver mapa',
+          ),
           IconButton(
             onPressed: () => Navigator.pushNamed(context, 'lugares'),
             icon: Icon(Icons.list),
@@ -137,19 +161,33 @@ class _CadastroLugarState extends State<CadastroLugar> {
                 validator: _validarObrigatorio,
               ),
 
+              SizedBox(height: 16),
+
+              OutlinedButton.icon(
+                onPressed: _buscarNoMapa,
+                icon: Icon(Icons.map),
+                label: Text("Buscar endereco ou CEP no mapa"),
+              ),
+
               TextFormField(
                 controller: _latitudeController,
                 decoration: InputDecoration(labelText: 'Latitude'),
 
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType: TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
+                ),
 
-                validator: _validarNumero,
+                validator: (valor) => _validarCoordenada(valor, 90),
               ),
               TextFormField(
                 controller: _longitudeController,
                 decoration: InputDecoration(labelText: 'Longitude'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                validator: _validarNumero,
+                keyboardType: TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
+                ),
+                validator: (valor) => _validarCoordenada(valor, 180),
               ),
 
               SizedBox(height: 8),
