@@ -1,39 +1,52 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 
 import 'package:guia/services/camera_service.dart';
+
+import 'package:image_picker/image_picker.dart';
 
 class CameraController extends ChangeNotifier {
   final CameraService _service = CameraService();
 
   bool carregando = false;
 
-  File? _imagemSelecionada;
+  String erro = '';
 
-  File? get imagemSelecionada => _imagemSelecionada;
+  Uint8List? imagemBytes;
+
+  String nomeImagem = '';
 
   Future<void> abrirGaleria() async {
-    carregando = true;
-    notifyListeners();
-
-    _imagemSelecionada = await _service.chamarGaleria();
-
-    carregando = false;
-    notifyListeners();
+    await _escolher(_service.chamarGaleria);
   }
 
   Future<void> abrirCamera() async {
+    await _escolher(_service.chamarCamera);
+  }
+
+  Future<void> _escolher(Future<XFile?> Function() abrir) async {
     carregando = true;
+    erro = '';
     notifyListeners();
 
     try {
-      _imagemSelecionada = await _service.chamarCamera();
+      final imagem = await abrir();
+
+      if (imagem != null) {
+        imagemBytes = await imagem.readAsBytes();
+        nomeImagem = imagem.name;
+      }
     } catch (e) {
-      debugPrint("$e");
+      erro = 'Nao foi possivel abrir a imagem: $e';
     } finally {
       carregando = false;
       notifyListeners();
     }
+  }
+
+  void limpar() {
+    imagemBytes = null;
+    nomeImagem = '';
+    erro = '';
+    notifyListeners();
   }
 }

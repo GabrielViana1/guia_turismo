@@ -12,6 +12,8 @@ class LugaresModel {
 
   final int categoriaId;
 
+  final List<String> fotos;
+
   LugaresModel({
     this.id = 0,
 
@@ -22,6 +24,7 @@ class LugaresModel {
     required this.longitude,
     required this.categoriaId,
     this.descricao = '',
+    this.fotos = const [],
   });
 
   bool get coordenadasValidas {
@@ -31,7 +34,16 @@ class LugaresModel {
         longitude <= 180;
   }
 
+  String? get foto {
+    if (fotos.isEmpty) {
+      return null;
+    }
+    return fotos.first;
+  }
+
   factory LugaresModel.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> galeria = json['galeria'] ?? [];
+
     return LugaresModel(
       id: json['id'],
       nome: json['nome'],
@@ -44,6 +56,8 @@ class LugaresModel {
       longitude: (json['longitude'] as num).toDouble(),
 
       descricao: json['descricao'] ?? '',
+
+      fotos: galeria.map((item) => item['urlFoto'].toString()).toList(),
     );
   }
 

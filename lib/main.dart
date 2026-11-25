@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:guia/controllers/auth_controller.dart';
 import 'package:guia/controllers/camera_controller.dart';
 import 'package:guia/controllers/categorias_controller.dart';
+import 'package:guia/controllers/favoritos_controller.dart';
+import 'package:guia/controllers/gps_controller.dart';
 import 'package:guia/controllers/localizacao_controller.dart';
 import 'package:guia/controllers/lugares_controller.dart';
 import 'package:guia/controllers/theme_controller.dart';
 
 import 'package:guia/screens/buscar_local_screen.dart';
 import 'package:guia/screens/cadastro_lugar.dart';
+import 'package:guia/screens/login_screen.dart';
 import 'package:guia/screens/lugares_screen.dart';
 import 'package:guia/screens/mapa_screen.dart';
 
@@ -41,17 +44,34 @@ class _InicializarState extends State<Inicializar> {
         ChangeNotifierProvider(create: (_) => CameraController()),
 
         ChangeNotifierProvider(create: (_) => LocalizacaoController()),
+
+        ChangeNotifierProvider(create: (_) => FavoritosController()),
+
+        ChangeNotifierProvider(create: (_) => GpsController()),
       ],
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
 
-        initialRoute: 'cadastro',
+        home: Consumer<AuthController>(
+          builder: (context, authController, child) {
+            if (authController.carregando) {
+              return Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (authController.usuario == null) {
+              return LoginScreen();
+            }
+
+            return MapaScreen();
+          },
+        ),
 
         routes: {
           'lugares': (context) => LugaresScreen(),
           'cadastro': (context) => CadastroLugar(),
-          'mapa': (context) => MapaScreen(),
           'buscar_local': (context) => BuscarLocalScreen(),
         },
       ),

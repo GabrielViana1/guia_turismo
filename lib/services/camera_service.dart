@@ -1,29 +1,19 @@
-import 'dart:io';
-
 import 'package:image_picker/image_picker.dart';
 
 class CameraService {
   final ImagePicker _picker = ImagePicker();
 
-  Future<File?> chamarGaleria() async {
-    final XFile? imagem = await _picker.pickImage(
+  Future<XFile?> chamarGaleria() async {
+    return await _picker.pickImage(
       source: ImageSource.gallery,
+      maxWidth: 1280,
     );
-
-    if (imagem == null) {
-      return null;
-    }
-
-    return File(imagem.path);
   }
 
-  Future<File?> chamarCamera() async {
-    final XFile? imagem = await _picker.pickImage(
+  Future<XFile?> chamarCamera() async {
+    return await _picker.pickImage(
       source: ImageSource.camera,
+      maxWidth: 1280,
     );
-    if (imagem == null) {
-      return null;
-    }
-    return File(imagem.path);
   }
 }

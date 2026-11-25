@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guia/main.dart';
 
 void main() {
-  testWidgets('Inicializar monta a tela de cadastro', (WidgetTester tester) async {
+  testWidgets('Inicializar monta o app', (WidgetTester tester) async {
     await tester.pumpWidget(const Inicializar());
 
     await tester.pump();

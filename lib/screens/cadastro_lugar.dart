@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 
 import 'package:guia/controllers/camera_controller.dart';
@@ -55,7 +53,13 @@ class _CadastroLugarState extends State<CadastroLugar> {
       categoriaId: _categoriaId!,
     );
 
-    final mensagem = await lugaresController.cadastrarLugar(dados);
+    final cameraController = context.read<CameraController>();
+
+    final mensagem = await lugaresController.cadastrarLugar(
+      dados,
+      cameraController.imagemBytes,
+      cameraController.nomeImagem,
+    );
 
     if (!mounted) return;
 
@@ -65,6 +69,7 @@ class _CadastroLugarState extends State<CadastroLugar> {
 
     if (mensagem.contains('sucesso')) {
       _limparFormulario();
+      cameraController.limpar();
     }
   }
 
@@ -119,19 +124,6 @@ class _CadastroLugarState extends State<CadastroLugar> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Cadastrar lugar"),
-
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, 'mapa'),
-            icon: Icon(Icons.map),
-            tooltip: 'Ver mapa',
-          ),
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, 'lugares'),
-            icon: Icon(Icons.list),
-            tooltip: 'Ver lugares',
-          ),
-        ],
       ),
 
       body: SingleChildScrollView(
@@ -234,7 +226,7 @@ class _CadastroLugarState extends State<CadastroLugar> {
 
               Consumer<CameraController>(
                 builder: (context, cameraController, child) {
-                  final imagem = cameraController.imagemSelecionada;
+                  final imagem = cameraController.imagemBytes;
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -243,17 +235,14 @@ class _CadastroLugarState extends State<CadastroLugar> {
                         Center(child: CircularProgressIndicator())
 
                       else if (imagem != null)
-                        kIsWeb
-                            ? Image.network(
-                                imagem.path,
-                                height: 180,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.file(
-                                imagem,
-                                height: 180,
-                                fit: BoxFit.cover,
-                              ),
+                        Image.memory(
+                          imagem,
+                          height: 180,
+                          fit: BoxFit.cover,
+                        ),
+
+                      if (cameraController.erro != '')
+                        Text(cameraController.erro),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

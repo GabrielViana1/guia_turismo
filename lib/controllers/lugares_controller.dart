@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 import 'package:guia/models/lugares_model.dart';
@@ -34,7 +36,11 @@ class LugaresController extends ChangeNotifier {
     }
   }
 
-  Future<String> cadastrarLugar(LugaresModel dados) async {
+  Future<String> cadastrarLugar(
+    LugaresModel dados,
+    Uint8List? foto,
+    String nomeFoto,
+  ) async {
     carregando = true;
     erro = "";
     notifyListeners();
@@ -42,7 +48,11 @@ class LugaresController extends ChangeNotifier {
     try {
       final lugaresService = LugaresServices();
 
-      final resposta = await lugaresService.cadastrarLugar(dados);
+      final resposta = await lugaresService.cadastrarLugar(
+        dados,
+        foto,
+        nomeFoto,
+      );
 
       final listaLugares = await lugaresService.buscarLugares();
       _lugares = listaLugares;

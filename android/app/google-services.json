@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "280408316264",
+    "project_id": "guia-turismo-69ac1",
+    "storage_bucket": "guia-turismo-69ac1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280408316264:android:1a2565e107979329109edd",
+        "android_client_info": {
+          "package_name": "com.example.guia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280408316264-tbqee1m9m505nicmnpdmslpo36f9ra9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.guia",
+            "certificate_hash": "5f3290ca464616b6b5af0e02b1724fe59e0b94f4"
+          }
+        },
+        {
+          "client_id": "280408316264-fis1d659mfmvm9oksj4ba2mvmmfs53jp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcmJoW839MREX8Wmv0YH22JWEj2yGJ3Ks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280408316264-fis1d659mfmvm9oksj4ba2mvmmfs53jp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

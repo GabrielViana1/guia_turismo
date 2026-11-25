@@ -1,46 +1,67 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:guia/models/usuario_model.dart';
+
 import 'package:guia/services/auth_service.dart';
 
-import 'package:guia/services/session_service.dart';
-
 class AuthController extends ChangeNotifier {
-  bool carregando = false;
+  final AuthService _authService = AuthService();
+
+  bool carregando = true;
+
+  bool entrando = false;
+
+  bool firebasePronto = false;
 
   String erro = '';
 
-  Future<bool> autenticarUsuario(String email, String senha) async {
-    carregando = true;
-    erro = '';
-    notifyListeners();
+  UsuarioModel? usuario;
 
+  AuthController() {
+    iniciar();
+  }
+
+  Future<void> iniciar() async {
     try {
-      final Map dados = await AuthService().autenticar(email, senha);
+      await _authService.iniciar();
+      firebasePronto = true;
 
-      final String? token = dados['token'];
-
-      if (token == null) {
-        erro = dados['erro'] ?? 'Login ou senha invalidos!';
-        return false;
-      }
-
-      await SessionService().salvarToken(token);
-
-      if (dados['usuario'] != null) {
-        await SessionService().salvarUsuario(dados['usuario']);
-      }
-
-      return true;
+      usuario = await _authService.usuarioLogado();
     } catch (e) {
-      erro = 'Erro: ${e.toString()}';
-      return false;
+      erro = 'Erro ao iniciar o Firebase: $e';
     } finally {
       carregando = false;
       notifyListeners();
     }
   }
 
-  Future<void> deslogarUsuario() async {
-    await SessionService().logout();
+  Future<void> entrarComGoogle() async {
+    if (!firebasePronto) {
+      return;
+    }
+
+    entrando = true;
+    erro = '';
+    notifyListeners();
+
+    try {
+      usuario = await _authService.entrar();
+    } catch (e) {
+      erro = 'Login cancelado ou com erro: $e';
+    } finally {
+      entrando = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> sair() async {
+    try {
+      await _authService.sair();
+    } catch (e) {
+      debugPrint('$e');
+    }
+
+    usuario = null;
+    notifyListeners();
   }
 }
